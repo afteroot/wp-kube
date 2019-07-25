@@ -11,8 +11,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /mnt/data/lv-1
+    path: /tmp/lv-1
   persistentVolumeReclaimPolicy: Recycle
+  storageClassName: manual
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -21,10 +22,11 @@ metadata:
   labels:
     type: local
 spec:
+  storageClassName: manual        
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /mnt/data/lv-2
+    path: /tmp/lv-2
   persistentVolumeReclaimPolicy: Recycle

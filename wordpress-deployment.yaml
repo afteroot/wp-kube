@@ -22,11 +22,12 @@ metadata:
   labels:
     app: wordpress
 spec:
+  storageClassName: manual      
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 5Gi
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment

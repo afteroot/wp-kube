@@ -8,5 +8,5 @@ kubectl create -f wordpress-deployment.yaml
 
 
 # Delete 
-kubectl delete secret mysql-pass
-kubectl delete deployment,service,pvc -l app=wordpress
+#kubectl delete secret mysql-pass
+#kubectl delete deployment,service,pvc -l app=wordpress
