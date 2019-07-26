@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /tmp/lv-1
+    path: /data/mysql
   persistentVolumeReclaimPolicy: Recycle
   storageClassName: manual
 ---
@@ -28,5 +28,5 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /tmp/lv-2
+    path: /data/www
   persistentVolumeReclaimPolicy: Recycle
