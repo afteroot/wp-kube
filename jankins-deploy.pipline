@@ -1,0 +1,38 @@
+node {
+   def mvnHome
+   stage ('Sync') {
+   
+   script {  	MASTER = "34.255.98.239"
+				SLAVE = "34.252.202.216"
+				IMAGE = "wordpress:latest"
+				IMAGE_NAME = "217993088031.dkr.ecr.us-east-1.amazonaws.com/wordpress:${BUILD_NUMBER}" 
+			}
+   
+   sshagent(['6b08c2c4-bb9b-4414-83bc-83f331e8d9af']) {   
+		sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null admin@$SLAVE 'sudo rsync -avmhzPx  /data/www/ /data_save/ --delete'"
+		}
+     }  
+   stage('Preparation Docker') { // for display purposes
+      
+       sh "sudo docker pull $IMAGE"
+      // Login to AWS repo
+	   sh "sudo aws ecr get-login --no-include-email --region us-east-1 | sudo bash " 
+	   sh "sudo docker tag  $IMAGE $IMAGE_NAME"
+        docker.image("$IMAGE_NAME").push()
+	   }
+  	
+   stage('Apply in Master') {
+		sshagent(['6b08c2c4-bb9b-4414-83bc-83f331e8d9af']) {
+		sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null admin@$MASTER 'sudo docker pull $IMAGE_NAME'"
+		sh """ 
+		 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null admin@$MASTER "sudo /root/change.py $IMAGE_NAME"
+		 """
+		sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null admin@$MASTER 'sudo kubectl apply -f /root/wp-kube/wp-depl.yaml'"
+		
+        }
+    }
+    stage ('Re-rsync files') {
+		sh "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null admin@$SLAVE 'sudo rsync -avmhzPx  /data_save/ /data/www/ --delete'"
+	}
+}
+
